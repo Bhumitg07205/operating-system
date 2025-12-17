@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Systems - Complete Study Guide</title>
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #1976D2;
+            --accent-color: #FFC107;
+            --dark-bg: #1a1a1a;
+            --light-bg: #f5f5f5;
+            --text-dark: #333;
+            --text-light: #666;
+            --border-color: #ddd;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --error: #F44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav-container {
+            display: flex;
+            background: #f9f9f9;
+            border-bottom: 2px solid var(--primary-color);
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            text-transform: uppercase;
+        }
+
+        .nav-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-color);
+        }
+
+        .nav-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        /* Main Content */
+        .content {
+            padding: 40px;
+        }
+
+        .topic-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .topic-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .topic-section h2 {
+            color: var(--primary-color);
+            font-size: 2em;
+            margin-bottom: 30px;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 15px;
+        }
+
+        .topic-section h3 {
+            color: var(--secondary-color);
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 1.4em;
+        }
+
+        .content-box {
+            background: var(--light-bg);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 5px;
+        }
+
+        .content-box h4 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.8;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            color: #856404;
+        }
+
+        .key-term {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* Code blocks */
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Comparison Cards */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .comparison-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+        }
+
+        .comparison-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .pros, .cons {
+            margin: 12px 0;
+        }
+
+        .pros strong {
+            color: var(--success);
+        }
+
+        .cons strong {
+            color: var(--error);
+        }
+
+        /* Callout boxes */
+        .callout {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 5px solid;
+        }
+
+        .callout.info {
+            background: #e3f2fd;
+            border-color: var(--primary-color);
+            color: #0d47a1;
+        }
+
+        .callout.warning {
+            background: #fff3e0;
+            border-color: var(--warning);
+            color: #e65100;
+        }
+
+        .callout.success {
+            background: #e8f5e9;
+            border-color: var(--success);
+            color: #1b5e20;
+        }
+
+        /* Search functionality */
+        .search-container {
+            margin-bottom: 30px;
+            position: sticky;
+            top: 0;
+            background: white;
+            padding-bottom: 20px;
+            z-index: 100;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: #f9f9f9;
+            border-top: 1px solid var(--border-color);
+            padding: 20px;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .nav-btn {
+                min-width: 120px;
+                padding: 12px 8px;
+                font-size: 0.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .comparison-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .nav-container {
+                display: none;
+            }
+
+            .topic-section {
+                display: block !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 File Systems Study Guide</h1>
+            <p>Complete revision resource for operating systems file management</p>
+        </header>
+
+        <div class="nav-container">
+            <button class="nav-btn active" onclick="showTopic('overview')">Overview</button>
+            <button class="nav-btn" onclick="showTopic('concept')">File Concept</button>
+            <button class="nav-btn" onclick="showTopic('access')">Access Methods</button>
+            <button class="nav-btn" onclick="showTopic('directory')">Directory Structure</button>
+            <button class="nav-btn" onclick="showTopic('mounting')">Mounting</button>
+            <button class="nav-btn" onclick="showTopic('sharing')">File Sharing</button>
+            <button class="nav-btn" onclick="showTopic('protection')">Protection</button>
+            <button class="nav-btn" onclick="showTopic('fsstructure')">FS Structure</button>
+            <button class="nav-btn" onclick="showTopic('implementation')">Implementation</button>
+            <button class="nav-btn" onclick="showTopic('directory-impl')">Dir Implementation</button>
+            <button class="nav-btn" onclick="showTopic('allocation')">Allocation Methods</button>
+            <button class="nav-btn" onclick="showTopic('freespace')">Free Space</button>
+        </div>
+
+        <div class="content">
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search topics...">
+            </div>
+
+            <!-- 1. Overview -->
+            <div id="overview" class="topic-section active">
+                <h2>📖 File Systems Overview</h2>
+                
+                <div class="callout info">
+                    <strong>What is a File System?</strong> A file system is the mechanism that an operating system uses to organize, store, retrieve, and manage files on storage devices like hard drives and SSDs.
+                </div>
+
+                <h3>Key Objectives</h3>
+                <div class="content-box">
+                    <ul>
+                        <li>Explain the function of file systems</li>
+                        <li>Describe interfaces to file systems</li>
+                        <li>Discuss file-system design tradeoffs</li>
+                        <li>Explore file-system protection mechanisms</li>
+                    </ul>
+                </div>
+
+                <h3>11 Major Topics</h3>
+                <div class="comparison-container">
+                    <div class="comparison-card">
+                        <h4>1. File Concept</h4>
+                        <p>Understanding what files are and their attributes</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>2. Access Methods</h4>
+                        <p>How data is read from files (sequential, direct, indexed)</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>3. Directory Structure</h4>
+                        <p>Organization of files on disk</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>4. File-System Mounting</h4>
+                        <p>Attaching file systems to the OS</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>5. File Sharing</h4>
+                        <p>Multi-user and distributed file access</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>6. Protection</h4>
+                        <p>Access control and security</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>7. FS Structure</h4>
+                        <p>Logical layers of file system design</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>8. Implementation</h4>
+                        <p>Data structures on disk and in memory</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>9. Directory Implementation</h4>
+                        <p>Storing directory information efficiently</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>10. Allocation Methods</h4>
+                        <p>How disk blocks are assigned to files</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>11. Free-Space Management</h4>
+                        <p>Tracking available disk space</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. File Concept -->
+            <div id="concept" class="topic-section">
+                <h2>📄 File Concept</h2>
+
+                <h3>Definition</h3>
+                <div class="content-box">
+                    <p>A <span class="key-term">file</span> is a named collection of related information recorded on secondary storage. It appears as a contiguous logical address space to the user.</p>
+                </div>
+
+                <h3>File Types</h3>
+                <table>
+                    <tr>
+                        <th>Category</th>
+                        <th>Type</th>
+                        <th>Examples</th>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>Data Files</strong></td>
+                        <td>Numeric</td>
+                        <td>Spreadsheets, databases</td>
+                    </tr>
+                    <tr>
+                        <td>Character (Text)</td>
+                        <td>.txt, .doc files</td>
+                    </tr>
+                    <tr>
+                        <td>Binary</td>
+                        <td>Images, videos, archives</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Program Files</strong></td>
+                        <td>Source & Executable</td>
+                        <td>.c, .exe, .jar files</td>
+                    </tr>
+                </table>
+
+                <h3>File Attributes (Metadata)</h3>
+                <div class="content-box">
+                    <table>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Purpose</th>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">Name</span></td>
+                            <td>Only human-readable part (e.g., "document.pdf")</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">Identifier</span></td>
+                            <td>Unique number (inode) used by the file system</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">Type</span></td>
+                            <td>Needed for systems supporting different types</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">Location</span></td>
+                            <td>Pointer to file's location on device</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">Size</span></td>
+                            <td>Current file size in bytes</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">Protection</span></td>
+                            <td>Who can read, write, or execute</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">Time/Date/User</span></td>
+                            <td>For security, monitoring, and auditing</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3>File Operations</h3>
+                <div class="comparison-container">
+                    <div class="comparison-card">
+                        <h4>Create</h4>
+                        <p>Make a new file and add it to the directory</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Write</h4>
+                        <p>Add data at the write pointer location</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Read</h4>
+                        <p>Get data from the read pointer location</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Seek</h4>
+                        <p>Reposition the pointer within the file</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Delete</h4>
+                        <p>Remove the file from directory and disk</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Truncate</h4>
+                        <p>Cut off the file at a certain point</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Open</h4>
+                        <p>Search directory and load file info to memory</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Close</h4>
+                        <p>Save file info back to disk directory</p>
+                    </div>
+                </div>
+
+                <h3>Open File Management</h3>
+                <div class="callout success">
+                    <strong>Why manage open files?</strong> When a file is open, the OS must track several pieces of information for efficient access.
+                </div>
+
+                <div class="content-box">
+                    <h4>Data Structures for Open Files:</h4>
+                    <ul>
+                        <li><strong>Open-file table:</strong> Tracks which files are currently open</li>
+                        <li><strong>File pointer:</strong> Shows current position (per process)</li>
+                        <li><strong>File-open count:</strong> How many processes have this file open</li>
+                        <li><strong>Disk location cache:</strong> Quick access info about file location</li>
+                        <li><strong>Access rights:</strong> What each process can do with the file</li>
+                    </ul>
+                </div>
+
+                <h3>Open File Locking</h3>
+                <div class="content-box">
+                    <p><strong>Purpose:</strong> Prevent conflicts when multiple processes access the same file simultaneously.</p>
+                    <ul>
+                        <li><strong>Shared Lock:</strong> Multiple readers can access (like a reader lock)</li>
+                        <li><strong>Exclusive Lock:</strong> Only one writer can access (like a writer lock)</li>
+                        <li><strong>Mandatory:</strong> OS enforces locks (denies access)</li>
+                        <li><strong>Advisory:</strong> OS informs about locks, process decides what to do</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 3. Access Methods -->
+            <div id="access" class="topic-section">
+                <h2>🔄 Access Methods</h2>
+
+                <div class="callout info">
+                    <strong>Definition:</strong> Access methods define how information is retrieved from a file.
+                </div>
+
+                <h3>1. Sequential Access</h3>
+                <div class="content-box">
+                    <p><strong>Like a tape:</strong> Read/write data in order from beginning to end.</p>
+                    <h4>Operations:</h4>
+                    <ul>
+                        <li><code>read next</code> – Get the next record</li>
+                        <li><code>write next</code> – Write the next record</li>
+                        <li><code>reset</code> – Go back to beginning</li>
+                    </ul>
+                    <h4>Characteristics:</h4>
+                    <ul>
+                        <li>Cannot jump around; must pass through preceding data</li>
+                        <li>Best for batch processing and streaming</li>
+                    </ul>
+                </div>
+
+                <h3>2. Direct Access (Random Access)</h3>
+                <div class="content-box">
+                    <p><strong>Like a CD:</strong> Jump to any location in the file without reading previous data.</p>
+                    <h4>Operations:</h4>
+                    <ul>
+                        <li><code>read n</code> – Read record number n</li>
+                        <li><code>write n</code> – Write to record number n</li>
+                        <li><code>position to n</code> – Jump to location n</li>
+                        <li><code>read next / write next</code> – Sequential operations from current position</li>
+                    </ul>
+                    <h4>Key Advantage:</h4>
+                    <p>File is viewed as fixed-length logical records. <span class="highlight">Relative block numbers</span> allow OS to decide file placement.</p>
+                </div>
+
+                <h3>3. Indexed Access</h3>
+                <div class="content-box">
+                    <p><strong>Like a book index:</strong> Create an index to quickly locate data.</p>
+                    <h4>How It Works:</h4>
+                    <ul>
+                        <li>An <span class="highlight">index file</span> is created with key-pointer pairs</li>
+                        <li>Search the small index to get pointer to data</li>
+                        <li>Jump directly to the data location</li>
+                    </ul>
+                    <h4>Example: IBM ISAM (Indexed Sequential-Access Method)</h4>
+                    <ul>
+                        <li>Small master index in memory</li>
+                        <li>Points to secondary index blocks on disk</li>
+                        <li>Secondary index points to actual data</li>
+                        <li>File kept sorted by defined key</li>
+                    </ul>
+                </div>
+
+                <h3>Comparison Table</h3>
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Sequential Access</th>
+                        <th>Random Access</th>
+                        <th>Indexed Access</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Speed</strong></td>
+                        <td>Fast for sequential</td>
+                        <td>Fast for random</td>
+                        <td>Very fast for lookup</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Case</strong></td>
+                        <td>Batch processing</td>
+                        <td>Databases</td>
+                        <td>Large databases</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Overhead</strong></td>
+                        <td>Minimal</td>
+                        <td>Low</td>
+                        <td>Index space needed</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 4. Directory Structure -->
+            <div id="directory" class="topic-section">
+                <h2>📁 Directory and Disk Structure</h2>
+
+                <h3>Directory Basics</h3>
+                <div class="content-box">
+                    <p>A <span class="key-term">directory</span> is a special file that acts as a symbol table, containing information about all files in a folder.</p>
+                    <p><strong>Stored:</strong> On disk as part of the file system</p>
+                    <p><strong>Purpose:</strong> Allows the OS to quickly locate files by name</p>
+                </div>
+
+                <h3>Directory Operations</h3>
+                <div class="comparison-container">
+                    <div class="comparison-card">
+                        <h4>Search</h4>
+                        <p>Find a specific file in the directory</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Create</h4>
+                        <p>Add a new file entry</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Delete</h4>
+                        <p>Remove a file entry</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>List</h4>
+                        <p>Display all files</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Rename</h4>
+                        <p>Change file name</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Traverse</h4>
+                        <p>Navigate folder structure</p>
+                    </div>
+                </div>
+
+                <h3>Directory Organization Goals</h3>
+                <table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Purpose</th>
+                        <th>Benefit</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Efficiency</strong></td>
+                        <td>Locate files quickly</td>
+                        <td>Fast file access</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Naming</strong></td>
+                        <td>Different users can share file names</td>
+                        <td>Avoid collisions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Grouping</strong></td>
+                        <td>Organize related files together</td>
+                        <td>Better organization</td>
+                    </tr>
+                </table>
+
+                <h3>Directory Structure Types</h3>
+
+                <div class="content-box">
+                    <h4>1️⃣ Single-Level Directory</h4>
+                    <p><strong>Structure:</strong> One directory for all users and files</p>
+                    <div class="pros">
+                        <strong>✗ Problems:</strong>
+                        <ul>
+                            <li>Naming conflicts (all files must have unique names)</li>
+                            <li>No grouping capability</li>
+                            <li>Impractical for modern systems</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-box">
+                    <h4>2️⃣ Two-Level Directory</h4>
+                    <p><strong>Structure:</strong> Master directory with separate folders per user</p>
+                    <div class="pros">
+                        <strong>✓ Benefits:</strong>
+                        <ul>
+                            <li>Solves naming problem (path names like /UserA/file.txt)</li>
+                            <li>Efficient searching</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>✗ Limitation:</strong>
+                        <ul>
+                            <li>No grouping within user directories</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-box">
+                    <h4>3️⃣ Tree-Structured Directories</h4>
+                    <p><strong>Structure:</strong> Users can create subdirectories (folders within folders)</p>
+                    <div class="pros">
+                        <strong>✓ Benefits:</strong>
+                        <ul>
+                            <li>Efficient searching</li>
+                            <li>Full grouping capability</li>
+                            <li>Current working directory concept</li>
+                            <li>Supports absolute and relative paths</li>
+                        </ul>
+                    </div>
+                    <div class="code-block">
+Example: /Users/John/Documents/Projects
+                    </div>
+                </div>
+
+                <div class="content-box">
+                    <h4>4️⃣ Acyclic-Graph Directories</h4>
+                    <p><strong>Structure:</strong> Allows sharing of subdirectories and files (multiple paths)</p>
+                    <div class="pros">
+                        <strong>✓ Benefits:</strong>
+                        <ul>
+                            <li>File/folder aliasing (same file, different names)</li>
+                            <li>Shared resources</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>✗ Issues:</strong>
+                        <ul>
+                            <li>Dangling pointers (if shared item deleted)</li>
+                            <li>Requires careful management</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-box">
+                    <h4>5️⃣ General Graph Directories</h4>
+                    <p><strong>Structure:</strong> Allows cycles (loops in the structure)</p>
+                    <div class="cons">
+                        <strong>✗ Problems:</strong>
+                        <ul>
+                            <li>Can cause infinite loops</li>
+                            <li>Requires garbage collection</li>
+                            <li>Cycle detection algorithms needed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. File-System Mounting -->
+            <div id="mounting" class="topic-section">
+                <h2>🔌 File-System Mounting</h2>
+
+                <h3>What is Mounting?</h3>
+                <div class="content-box">
+                    <p>A file system must be <span class="highlight">mounted</span> before it can be accessed. Mounting attaches a file system to the existing directory structure.</p>
+                </div>
+
+                <h3>Key Concepts</h3>
+                <table>
+                    <tr>
+                        <th>Term</th>
+                        <th>Definition</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Mount Point</strong></td>
+                        <td>The location in the directory tree where the file system is attached</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Volume</strong></td>
+                        <td>A disk or partition containing a file system</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Partition</strong></td>
+                        <td>A section of a disk (also called slice or minidisk)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Superblock</strong></td>
+                        <td>Volume control block with FS metadata</td>
+                    </tr>
+                </table>
+
+                <h3>Mounting Process</h3>
+                <div class="content-box">
+                    <ol>
+                        <li>OS is given mount request with source (device) and mount point (directory)</li>
+                        <li>OS verifies file system is valid</li>
+                        <li>File system is attached to mount point</li>
+                        <li>Added to mount table for tracking</li>
+                        <li>Users can access files transparently</li>
+                    </ol>
+                </div>
+
+                <h3>Mount Examples</h3>
+                <div class="code-block">
+# Linux mount command
+mount /dev/sdb1 /mnt/usb
+
+# Now access files at /mnt/usb/...
+
+# Windows assigns drive letters
+D:\\ (USB drive mounted)
+                </div>
+
+                <h3>Mounting Timing</h3>
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>When</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Boot Time</strong></td>
+                        <td>Root partition mounted at startup</td>
+                        <td>System drive</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Automatic</strong></td>
+                        <td>OS auto-mounts known devices</td>
+                        <td>USB, CD-ROM</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Manual</strong></td>
+                        <td>User mounts on demand</td>
+                        <td>Network drives</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 6. File Sharing -->
+            <div id="sharing" class="topic-section">
+                <h2>👥 File Sharing</h2>
+
+                <h3>Motivation</h3>
+                <div class="callout info">
+                    <strong>Why share files?</strong> Allows multiple users to access the same files on multi-user systems and distributed networks.
+                </div>
+
+                <h3>Local File Sharing</h3>
+                <div class="content-box">
+                    <h4>User and Group Identification</h4>
+                    <ul>
+                        <li><strong>User ID (UID):</strong> Identifies individual users</li>
+                        <li><strong>Group ID (GID):</strong> Users can belong to groups for shared permissions</li>
+                        <li><strong>Owner:</strong> User who created/owns the file</li>
+                    </ul>
+                </div>
+
+                <h3>Remote/Network File Sharing</h3>
+                <div class="content-box">
+                    <p><strong>Purpose:</strong> Access files across a network from different computers.</p>
+                    
+                    <h4>Methods:</h4>
+                    <ul>
+                        <li><strong>Manual (FTP):</strong> Explicit file transfer programs</li>
+                        <li><strong>Automatic (Distributed FS):</strong> Seamless transparent access</li>
+                        <li><strong>Semi-automatic (Web):</strong> Browser-based access</li>
+                    </ul>
+
+                    <h4>Client-Server Model:</h4>
+                    <ul>
+                        <li>Clients mount remote file systems from servers</li>
+                        <li>Server can serve multiple clients</li>
+                        <li>Transparent to applications</li>
+                    </ul>
+                </div>
+
+                <h3>Common Network File Systems</h3>
+                <table>
+                    <tr>
+                        <th>Protocol</th>
+                        <th>Platform</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><strong>NFS</strong></td>
+                        <td>UNIX/Linux</td>
+                        <td>Network File System - standard for UNIX</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CIFS</strong></td>
+                        <td>Windows</td>
+                        <td>Common Internet File System - Windows standard</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SMB</strong></td>
+                        <td>Windows</td>
+                        <td>Server Message Block - basis for CIFS</td>
+                    </tr>
+                </table>
+
+                <h3>Remote File System Challenges</h3>
+                <div class="content-box">
+                    <h4>Failure Modes:</h4>
+                    <ul>
+                        <li>Network failures</li>
+                        <li>Server crashes</li>
+                        <li>Metadata corruption</li>
+                        <li>Lost connections</li>
+                    </ul>
+
+                    <h4>Recovery Strategies:</h4>
+                    <ul>
+                        <li><strong>Stateless Protocols (NFS v3):</strong> Each request contains all info → easier recovery but less security</li>
+                        <li><strong>Stateful Protocols (AFS):</strong> Server maintains state → better control but harder recovery</li>
+                    </ul>
+                </div>
+
+                <h3>Consistency Semantics</h3>
+                <div class="content-box">
+                    <p><strong>Question:</strong> When does one user see changes made by another user?</p>
+                    
+                    <table>
+                        <tr>
+                            <th>System</th>
+                            <th>Semantics</th>
+                            <th>Behavior</th>
+                        </tr>
+                        <tr>
+                            <td><strong>UNIX</strong></td>
+                            <td>Immediate</td>
+                            <td>Writes visible immediately to other users</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AFS</strong></td>
+                            <td>Session</td>
+                            <td>Writes visible only after file is closed</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 7. Protection -->
+            <div id="protection" class="topic-section">
+                <h2>🔒 Protection</h2>
+
+                <h3>Fundamentals</h3>
+                <div class="callout success">
+                    <strong>Goal:</strong> File owner/creator controls what can be done, by whom, and when.
+                </div>
+
+                <h3>Access Rights/Modes</h3>
+                <div class="content-box">
+                    <table>
+                        <tr>
+                            <th>Mode</th>
+                            <th>Permission</th>
+                            <th>Meaning</th>
+                        </tr>
+                        <tr>
+                            <td><strong>R</strong></td>
+                            <td>Read</td>
+                            <td>Can view file contents</td>
+                        </tr>
+                        <tr>
+                            <td><strong>W</strong></td>
+                            <td>Write</td>
+                            <td>Can modify file</td>
+                        </tr>
+                        <tr>
+                            <td><strong>X</strong></td>
+                            <td>Execute</td>
+                            <td>Can run as program</td>
+                        </tr>
+                        <tr>
+                            <td><strong>A</strong></td>
+                            <td>Append</td>
+                            <td>Can add to end of file</td>
+                        </tr>
+                        <tr>
+                            <td><strong>D</strong></td>
+                            <td>Delete</td>
+                            <td>Can delete file</td>
+                        </tr>
+                        <tr>
+                            <td><strong>L</strong></td>
+                            <td>List</td>
+                            <td>Can list directory</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3>UNIX/Linux Protection Model</h3>
+                <div class="content-box">
+                    <p><strong>Three Classes of Users:</strong></p>
+                    <table>
+                        <tr>
+                            <th>Class</th>
+                            <th>Represents</th>
+                            <th>Example Permissions</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Owner</strong></td>
+                            <td>File creator/owner</td>
+                            <td>rwx (read, write, execute)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Group</strong></td>
+                            <td>Users in file's group</td>
+                            <td>r-x (read, execute)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Public</strong></td>
+                            <td>Everyone else</td>
+                            <td>r-- (read only)</td>
+                        </tr>
+                    </table>
+
+                    <h4>Octal Notation:</h4>
+                    <div class="code-block">
+rwxr-xr--   =   754
+| | |  | |  |   | | |
+| | |  | |  |   | | └─ Public: 4 (read)
+| | |  | |  |   | └─── Group: 5 (read+execute)
+| | |  | |  |   └───── Owner: 7 (read+write+execute)
+r=4, w=2, x=1
+                    </div>
+
+                    <h4>Managing Groups:</h4>
+                    <div class="code-block">
+# Create a group
+groupadd developers
+
+# Add users to group
+usermod -a -G developers john
+
+# Change file's group
+chgrp developers project.txt
+
+# Change permissions
+chmod 750 project.txt   # Owner: rwx, Group: r-x, Public: none
+                    </div>
+                </div>
+
+                <h3>Windows Access Control</h3>
+                <div class="content-box">
+                    <p><strong>Windows uses ACLs (Access Control Lists):</strong></p>
+                    <ul>
+                        <li>More granular than UNIX</li>
+                        <li>Can assign specific rights to individual users/groups</li>
+                        <li>Supports inheritance</li>
+                        <li>Examples: Read, Write, Execute, Delete, Change Owner, etc.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 8. File-System Structure -->
+            <div id="fsstructure" class="topic-section">
+                <h2>🏗️ File-System Structure</h2>
+
+                <h3>Layered Architecture</h3>
+                <div class="callout info">
+                    <strong>Why layers?</strong> Reduces complexity, provides abstraction, allows different implementations at each layer.
+                </div>
+
+                <div class="content-box">
+                    <p><strong>File systems are organized as layers (top to bottom):</strong></p>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Name</th>
+                        <th>Function</th>
+                    </tr>
+                    <tr>
+                        <td><strong>7</strong></td>
+                        <td>Application Programs</td>
+                        <td>User applications (text editors, browsers)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>6</strong></td>
+                        <td>Logical File System</td>
+                        <td>Manages metadata (inodes, FCBs), file names, protection</td>
+                    </tr>
+                    <tr>
+                        <td><strong>5</strong></td>
+                        <td>File-Organization Module</td>
+                        <td>Maps logical blocks to physical blocks, manages free space</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4</strong></td>
+                        <td>Basic File System</td>
+                        <td>Issues block I/O commands, manages buffers and caches</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3</strong></td>
+                        <td>I/O Control</td>
+                        <td>Device drivers, hardware-specific commands</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2</strong></td>
+                        <td>Devices</td>
+                        <td>Physical hardware (disks, SSDs)</td>
+                    </tr>
+                </table>
+
+                <h3>Key Concepts</h3>
+                <div class="content-box">
+                    <h4>File Control Block (FCB)</h4>
+                    <p>Storage structure containing information about a file:</p>
+                    <ul>
+                        <li>File name</li>
+                        <li>Inode number</li>
+                        <li>Permissions and access rights</li>
+                        <li>File size</li>
+                        <li>Date/time of creation, modification, access</li>
+                        <li>Pointer to data blocks on disk</li>
+                    </ul>
+                </div>
+
+                <div class="content-box">
+                    <h4>Multiple File Systems</h4>
+                    <p>Modern OSes support multiple file system types:</p>
+                    <ul>
+                        <li><strong>Linux:</strong> ext2, ext3, ext4, 40+ types total</li>
+                        <li><strong>Windows:</strong> FAT, FAT32, NTFS</li>
+                        <li><strong>Mac:</strong> HFS+, APFS</li>
+                        <li><strong>Removable:</strong> ISO 9660 (CD-ROM), UDF (DVD)</li>
+                        <li><strong>Network:</strong> NFS, SMB, etc.</li>
+                        <li><strong>Emerging:</strong> ZFS, GoogleFS, Oracle ASM, FUSE</li>
+                    </ul>
+                </div>
+
+                <h3>Advantages of Layering</h3>
+                <div class="comparison-container">
+                    <div class="comparison-card">
+                        <h4>✓ Reduced Complexity</h4>
+                        <p>Each layer has well-defined interface</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>✓ Better Abstraction</h4>
+                        <p>Higher layers don't know hardware details</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>✓ Flexibility</h4>
+                        <p>Can change one layer without affecting others</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>✗ Performance Overhead</h4>
+                        <p>Extra function calls and context switches</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. File-System Implementation -->
+            <div id="implementation" class="topic-section">
+                <h2>⚙️ File-System Implementation</h2>
+
+                <h3>On-Disk Structures</h3>
+                <div class="content-box">
+                    <p>The OS must store several critical pieces of information on disk:</p>
+                    
+                    <h4>1. Boot Control Block</h4>
+                    <ul>
+                        <li>Contains info needed to boot OS from that volume</li>
+                        <li>Usually first block (block 0) of volume</li>
+                        <li>Only needed if volume contains OS</li>
+                    </ul>
+
+                    <h4>2. Volume Control Block (Superblock)</h4>
+                    <ul>
+                        <li>Contains volume details and metadata</li>
+                        <li>Total number of blocks</li>
+                        <li>Number of free blocks</li>
+                        <li>Block size</li>
+                        <li>Free block pointers or bitmap</li>
+                        <li>In NTFS: called Master File Table</li>
+                    </ul>
+
+                    <h4>3. Directory Structure</h4>
+                    <ul>
+                        <li>Organizes the files in the file system</li>
+                        <li>Maps file names to inode numbers</li>
+                        <li>Can be hierarchical (tree) or flat</li>
+                    </ul>
+
+                    <h4>4. File Control Blocks (Inodes)</h4>
+                    <ul>
+                        <li>One per file</li>
+                        <li>Inode number</li>
+                        <li>Permissions (mode)</li>
+                        <li>File size</li>
+                        <li>Timestamps (create, modify, access)</li>
+                        <li>Pointers to data blocks</li>
+                    </ul>
+                </div>
+
+                <h3>In-Memory Structures</h3>
+                <div class="content-box">
+                    <p><strong>For performance, the OS keeps copies in RAM:</strong></p>
+
+                    <h4>1. Mount Table</h4>
+                    <ul>
+                        <li>Info on all mounted file systems</li>
+                        <li>Mount points</li>
+                        <li>File system types</li>
+                    </ul>
+
+                    <h4>2. System-Wide Open-File Table</h4>
+                    <ul>
+                        <li>Copy of FCB for every open file</li>
+                        <li>Shared among all processes</li>
+                        <li>File reference count</li>
+                    </ul>
+
+                    <h4>3. Per-Process Open-File Table</h4>
+                    <ul>
+                        <li>Pointers to system-wide table entries</li>
+                        <li>Current file position/pointer per process</li>
+                        <li>Access mode (read, write, append)</li>
+                    </ul>
+
+                    <h4>4. Buffers and Caches</h4>
+                    <ul>
+                        <li>Separate memory section for frequently used blocks</li>
+                        <li>Speeds up access significantly</li>
+                    </ul>
+                </div>
+
+                <h3>File Open and Read Process</h3>
+                <div class="callout info">
+                    <strong>What happens when you open and read a file?</strong>
+                </div>
+
+                <div class="content-box">
+                    <h4>Opening a File:</h4>
+                    <ol>
+                        <li>App calls <code>open(filename)</code></li>
+                        <li>OS searches directory structure on disk</li>
+                        <li>Finds file's directory entry</li>
+                        <li>Loads FCB (inode) into memory</li>
+                        <li>Creates entry in open-file table</li>
+                        <li>Returns file descriptor/handle to app</li>
+                    </ol>
+
+                    <h4>Reading a File:</h4>
+                    <ol>
+                        <li>App calls <code>read(file_descriptor, size)</code></li>
+                        <li>OS checks if data in cache</li>
+                        <li>If cached: return data from cache</li>
+                        <li>If not cached: issue disk I/O command</li>
+                        <li>Data transferred to buffer</li>
+                        <li>Data copied from buffer to user process memory</li>
+                        <li>Return control to application</li>
+                    </ol>
+                </div>
+
+                <h3>Partitions and Mounting</h3>
+                <div class="content-box">
+                    <h4>Disk Organization:</h4>
+                    <ul>
+                        <li><strong>Partitions:</strong> Logical subdivisions of a disk</li>
+                        <li><strong>Boot block:</strong> Contains boot code/OS kernel pointers</li>
+                        <li><strong>Root partition:</strong> Contains the operating system</li>
+                        <li><strong>Other partitions:</strong> Other OSes, file systems, or raw data</li>
+                    </ul>
+
+                    <h4>Mount Time Checks:</h4>
+                    <ul>
+                        <li>Is metadata valid?</li>
+                        <li>Are pointers consistent?</li>
+                        <li>If errors found: run fsck (file system check)</li>
+                        <li>If OK: add to mount table</li>
+                    </ul>
+                </div>
+
+                <h3>Virtual File Systems (VFS)</h3>
+                <div class="content-box">
+                    <p><strong>Purpose:</strong> Object-oriented abstraction in UNIX/Linux that allows multiple file system types to work transparently.</p>
+
+                    <h4>How VFS Works:</h4>
+                    <ul>
+                        <li>API calls go to VFS layer (not specific FS)</li>
+                        <li>VFS dispatches to appropriate FS implementation</li>
+                        <li>Uses virtual inodes (vnodes) to abstract details</li>
+                        <li>Each vnode has pointer to FS-specific functions</li>
+                    </ul>
+
+                    <h4>Example (Linux):</h4>
+                    <div class="code-block">
+VFS Objects:
+- inode: file metadata
+- dentry: directory entry
+- superblock: filesystem metadata
+- file: open file state
+
+Each object has function table:
+int open(...)
+int close(...)
+ssize_t read(...)
+ssize_t write(...)
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10. Directory Implementation -->
+            <div id="directory-impl" class="topic-section">
+                <h2>📂 Directory Implementation</h2>
+
+                <h3>Overview</h3>
+                <div class="content-box">
+                    <p>A directory must map <strong>file names</strong> to <strong>file inodes/FCBs</strong>.</p>
+                    <p><strong>Challenge:</strong> How to store this mapping efficiently for fast lookups?</p>
+                </div>
+
+                <h3>Implementation Methods</h3>
+
+                <h4>1. Linear List</h4>
+                <div class="content-box">
+                    <p><strong>Structure:</strong> Simple list of file names with pointers to data blocks/inodes.</p>
+                    
+                    <div class="pros">
+                        <strong>✓ Pros:</strong>
+                        <ul>
+                            <li>Simple to program</li>
+                            <li>Easy to implement</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>✗ Cons:</strong>
+                        <ul>
+                            <li>Linear search time – slow for large directories</li>
+                            <li>Search every file entry sequentially</li>
+                        </ul>
+                    </div>
+
+                    <h4>Optimization:</h4>
+                    <ul>
+                        <li>Keep list sorted alphabetically (using linked list)</li>
+                        <li>Use B+ tree instead of linked list</li>
+                    </ul>
+                </div>
+
+                <h4>2. Hash Table</h4>
+                <div class="content-box">
+                    <p><strong>Structure:</strong> Linear list with hash data structure for faster lookup.</p>
+                    
+                    <div class="pros">
+                        <strong>✓ Pros:</strong>
+                        <ul>
+                            <li>Much faster search time</li>
+                            <li>Average O(1) lookup</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>✗ Cons:</strong>
+                        <ul>
+                            <li>Collisions (two names hash to same location)</li>
+                            <li>Only good if entries are fixed size</li>
+                        </ul>
+                    </div>
+
+                    <h4>Collision Resolution:</h4>
+                    <ul>
+                        <li>Chained-overflow method (store collisions in linked list)</li>
+                        <li>Open addressing</li>
+                    </ul>
+                </div>
+
+                <h3>Comparison</h3>
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Search Time</th>
+                        <th>Space</th>
+                        <th>Best For</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Linear List</strong></td>
+                        <td>O(n) - slow</td>
+                        <td>Minimal</td>
+                        <td>Small directories</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hash Table</strong></td>
+                        <td>O(1) - fast</td>
+                        <td>Extra memory</td>
+                        <td>Large directories</td>
+                    </tr>
+                    <tr>
+                        <td><strong>B+ Tree</strong></td>
+                        <td>O(log n) - balanced</td>
+                        <td>Moderate</td>
+                        <td>Very large directories</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 11. Allocation Methods -->
+            <div id="allocation" class="topic-section">
+                <h2>🗂️ Allocation Methods</h2>
+
+                <h3>Introduction</h3>
+                <div class="callout info">
+                    <strong>Question:</strong> How are disk blocks allocated to files? How is disk space managed?
+                </div>
+
+                <div class="content-box">
+                    <p>An <span class="highlight">allocation method</span> defines how disk blocks are assigned to files.</p>
+                    <p><strong>Goal:</strong> Efficiently use disk space while maintaining good performance for file access.</p>
+                </div>
+
+                <h3>1. Contiguous Allocation</h3>
+                <div class="content-box">
+                    <p><strong>Concept:</strong> Each file occupies a set of <span class="highlight">contiguous</span> (adjacent) blocks on disk.</p>
+
+                    <h4>Example:</h4>
+                    <div class="code-block">
+File "document.txt"
+Stored in blocks: 10, 11, 12, 13
+(adjacent, no gaps)
+                    </div>
+
+                    <div class="pros">
+                        <strong>✓ Benefits:</strong>
+                        <ul>
+                            <li>Best performance for sequential AND random access</li>
+                            <li>Only 1 seek needed for sequential reads</li>
+                            <li>Simple implementation</li>
+                            <li>Only need: starting block # and length</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>✗ Problems:</strong>
+                        <ul>
+                            <li>External fragmentation (holes in disk)</li>
+                            <li>Hard to grow files</li>
+                            <li>Need to know file size in advance</li>
+                            <li>May require offline compaction (system downtime)</li>
+                        </ul>
+                    </div>
+
+                    <h4>Mapping Logical to Physical:</h4>
+                    <div class="code-block">
+Logical Address / Block Size = Q (block index) + R (offset in block)
+Physical Block = Q + starting address
+Displacement in block = R
+                    </div>
+                </div>
+
+                <h3>2. Linked Allocation</h3>
+                <div class="content-box">
+                    <p><strong>Concept:</strong> Each block contains a <span class="highlight">pointer to the next block</span>. Blocks form a linked list.</p>
+
+                    <h4>Example:</h4>
+                    <div class="code-block">
+Block 10 [data | pointer to 23]
+Block 23 [data | pointer to 87]
+Block 87 [data | pointer to nil]
+                    </div>
+
+                    <div class="pros">
+                        <strong>✓ Benefits:</strong>
+                        <ul>
+                            <li>No external fragmentation</li>
+                            <li>No compaction needed</li>
+                            <li>Easy to grow files</li>
+                            <li>Can use all available space</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>✗ Problems:</strong>
+                        <ul>
+                            <li>Poor random access (must traverse list)</li>
+                            <li>Reliability issues (lost pointer = lost data)</li>
+                            <li>Many seeks needed for sequential reads</li>
+                            <li>Pointer storage takes space</li>
+                        </ul>
+                    </div>
+
+                    <h4>Optimization: Clustering</h4>
+                    <ul>
+                        <li>Group blocks into clusters</li>
+                        <li>Pointer points to next cluster instead of next block</li>
+                        <li>Reduces pointer overhead</li>
+                        <li>Improves throughput</li>
+                    </ul>
+
+                    <h4>Variation: File Allocation Table (FAT)</h4>
+                    <p><strong>Used in:</strong> MS-DOS, Windows 95/98 (FAT12, FAT16, FAT32)</p>
+                    <ul>
+                        <li>Instead of storing pointers in blocks, keep a separate <strong>FAT table</strong> at disk beginning</li>
+                        <li>Indexed by block number</li>
+                        <li>Much faster disk access than embedded pointers</li>
+                        <li>FAT can be cached in memory</li>
+                        <li>New block allocation is simple</li>
+                    </ul>
+                </div>
+
+                <h3>3. Indexed Allocation</h3>
+                <div class="content-box">
+                    <p><strong>Concept:</strong> Each file has its own <span class="highlight">index block</span> containing pointers to all its data blocks.</p>
+
+                    <h4>Example:</h4>
+                    <div class="code-block">
+Index Block [10, 15, 22, 47, ...]
+    ↓    ↓   ↓   ↓
+  Data Data Data Data
+                    </div>
+
+                    <div class="pros">
+                        <strong>✓ Benefits:</strong>
+                        <ul>
+                            <li>Supports efficient random access</li>
+                            <li>No external fragmentation</li>
+                            <li>Dynamic file growth</li>
+                            <li>Fast access to any block</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>✗ Problems:</strong>
+                        <ul>
+                            <li>Overhead of index block</li>
+                            <li>Small files waste space</li>
+                            <li>Single block access requires 2 I/Os (index + data)</li>
+                        </ul>
+                    </div>
+
+                    <h4>For Large Files: Multi-Level Indexing</h4>
+                    <ul>
+                        <li><strong>Linked Scheme:</strong> Index blocks form a linked list (no size limit)</li>
+                        <li><strong>Two-Level Index:</strong> Outer index points to inner indices</li>
+                        <li><strong>Combined Scheme (UNIX UFS):</strong> Direct pointers + single/double/triple indirect pointers</li>
+                    </ul>
+
+                    <h4>Example: UNIX UFS</h4>
+                    <div class="code-block">
+Inode contains:
+- 12 direct pointers (for small files)
+- 1 indirect pointer (points to block of pointers)
+- 1 double-indirect pointer
+- 1 triple-indirect pointer
+                    </div>
+                </div>
+
+                <h3>Performance Comparison</h3>
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Sequential</th>
+                        <th>Random</th>
+                        <th>Fragmentation</th>
+                        <th>Best Use</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Contiguous</strong></td>
+                        <td>Excellent</td>
+                        <td>Excellent</td>
+                        <td>External</td>
+                        <td>Streaming, CD-ROM</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Linked</strong></td>
+                        <td>Good</td>
+                        <td>Poor</td>
+                        <td>None</td>
+                        <td>Sequential only</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Indexed</strong></td>
+                        <td>Good</td>
+                        <td>Excellent</td>
+                        <td>None</td>
+                        <td>Databases</td>
+                    </tr>
+                </table>
+
+                <h3>File System Declaration of Access Type</h3>
+                <div class="content-box">
+                    <p><strong>Some modern file systems allow users to declare access pattern:</strong></p>
+                    <ul>
+                        <li>Create file as "sequential access"</li>
+                        <li>Or "random access"</li>
+                        <li>File system selects appropriate allocation method</li>
+                        <li>Optimizes for declared access pattern</li>
+                    </ul>
+                </div>
+
+                <h3>Extent-Based Systems</h3>
+                <div class="content-box">
+                    <p><strong>Modern systems (Veritas, ZFS, ext4):</strong> Use modified contiguous allocation.</p>
+                    <ul>
+                        <li><strong>Extent:</strong> A contiguous block of disk</li>
+                        <li>File = collection of extents (not individual blocks)</li>
+                        <li>Combines benefits of contiguous + linked allocation</li>
+                        <li>Better fragmentation handling</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 12. Free-Space Management -->
+            <div id="freespace" class="topic-section">
+                <h2>⚪ Free-Space Management</h2>
+
+                <h3>Introduction</h3>
+                <div class="callout info">
+                    <strong>Challenge:</strong> How to track which disk blocks are free (unallocated)?
+                </div>
+
+                <div class="content-box">
+                    <p>The <span class="highlight">free-space list</span> is a data structure that tracks available blocks/clusters for file allocation.</p>
+                </div>
+
+                <h3>1. Bit Vector (Bitmap)</h3>
+                <div class="content-box">
+                    <p><strong>Concept:</strong> A string of bits where each bit represents one block.</p>
+
+                    <h4>Representation:</h4>
+                    <div class="code-block">
+bit[i] = 1 means block[i] is FREE
+bit[i] = 0 means block[i] is OCCUPIED
+
+Example (8 blocks):
+11010010
+ ↓ ↓ ↓ ↓  (blocks 0,2,4,5 are free)
+                    </div>
+
+                    <h4>Finding a Free Block:</h4>
+                    <ul>
+                        <li>Scan bitmap looking for a "1" bit</li>
+                        <li>CPUs have instructions to find first set bit</li>
+                        <li>Calculate block number from position</li>
+                    </ul>
+
+                    <div class="pros">
+                        <strong>✓ Benefits:</strong>
+                        <ul>
+                            <li>Simple and efficient</li>
+                            <li>Fast bit operations in hardware</li>
+                            <li>Easy to get contiguous blocks</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>✗ Problems:</strong>
+                        <ul>
+                            <li>Requires extra space for bitmap</li>
+                        </ul>
+                    </div>
+
+                    <h4>Space Requirement Example:</h4>
+                    <div class="code-block">
+Block size = 4 KB = 2^12 bytes
+Disk size = 240 bytes (1 TB)
+Number of blocks = 240 / 212 = 228
+
+Bitmap needed = 228 bits = 32 MB
+With 4-block clusters = 8 MB
+                    </div>
+                </div>
+
+                <h3>2. Linked List (Free List)</h3>
+                <div class="content-box">
+                    <p><strong>Concept:</strong> Link all free blocks together in a list.</p>
+
+                    <h4>Structure:</h4>
+                    <div class="code-block">
+Free Block 10 → Free Block 15 → Free Block 23 → ... → null
+                    </div>
+
+                    <div class="pros">
+                        <strong>✓ Benefits:</strong>
+                        <ul>
+                            <li>No wasted space (no bitmap)</li>
+                            <li>Simple linked list structure</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>✗ Problems:</strong>
+                        <ul>
+                            <li>Cannot easily find contiguous blocks</li>
+                            <li>Must traverse list entirely</li>
+                            <li>Slow allocation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>3. Grouping</h3>
+                <div class="content-box">
+                    <p><strong>Concept:</strong> Store addresses of n free blocks in the first free block.</p>
+
+                    <h4>Structure:</h4>
+                    <div class="code-block">
+Block 10: [100, 200, 300, ..., 900, pointer to next free block group]
+
+Next free block group (pointer in block 10):
+Block 100: [1000, 1100, 1200, ..., pointer to next group]
+                    </div>
+
+                    <h4>Benefits:</h4>
+                    <ul>
+                        <li>Better than simple linked list</li>
+                        <li>Can still find contiguous blocks</li>
+                        <li>Fewer pointers to traverse</li>
+                    </ul>
+                </div>
+
+                <h3>4. Counting</h3>
+                <div class="content-box">
+                    <p><strong>Concept:</strong> Store address of first free block + count of contiguous free blocks following it.</p>
+
+                    <h4>Structure:</h4>
+                    <div class="code-block">
+(10, 15)  - blocks 10-24 are free (15 blocks starting at 10)
+(100, 8)  - blocks 100-107 are free (8 blocks starting at 100)
+(200, 3)  - blocks 200-202 are free (3 blocks starting at 200)
+                    </div>
+
+                    <div class="pros">
+                        <strong>✓ Benefits:</strong>
+                        <ul>
+                            <li>Good for contiguous allocation methods</li>
+                            <li>Much more compact than bitmap</li>
+                            <li>Easy to find contiguous space</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>✗ Limitation:</strong>
+                        <ul>
+                            <li>Assumes space is frequently contiguously used</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>5. Space Maps (Modern Systems - ZFS)</h3>
+                <div class="content-box">
+                    <p><strong>Problem with large file systems:</strong> Bitmaps don't fit in memory! A 1TB disk would need 32MB+ for bitmap.</p>
+
+                    <h4>ZFS Solution:</h4>
+                    <ul>
+                        <li>Divides device into <span class="highlight">metaslab</span> units</li>
+                        <li>Each metaslab has associated space map</li>
+                        <li>Uses counting algorithm (address + count)</li>
+                        <li>Records to log file (not directly to FS)</li>
+                        <li>Log replayed on startup</li>
+                        <li>Combines contiguous free blocks into single entry</li>
+                    </ul>
+
+                    <h4>Benefits:</h4>
+                    <ul>
+                        <li>Handles massive file systems efficiently</li>
+                        <li>Metadata stays in manageable size</li>
+                        <li>Log-based approach for consistency</li>
+                    </ul>
+                </div>
+
+                <h3>Method Comparison</h3>
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Space Overhead</th>
+                        <th>Find Contiguous</th>
+                        <th>Best For</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Bitmap</strong></td>
+                        <td>Small fixed</td>
+                        <td>Easy</td>
+                        <td>Medium disks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Linked List</strong></td>
+                        <td>None</td>
+                        <td>Hard</td>
+                        <td>Small disks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Grouping</strong></td>
+                        <td>Small</td>
+                        <td>Good</td>
+                        <td>Contiguous allocation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Counting</strong></td>
+                        <td>Small</td>
+                        <td>Excellent</td>
+                        <td>Extent-based FS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Space Maps</strong></td>
+                        <td>Minimal</td>
+                        <td>Excellent</td>
+                        <td>Large modern FS</td>
+                    </tr>
+                </table>
+
+                <h3>Efficiency Considerations</h3>
+                <div class="content-box">
+                    <h4>Data Structure Choices Affect Performance:</h4>
+                    <ul>
+                        <li>Disk allocation algorithms</li>
+                        <li>Directory search algorithms</li>
+                        <li>Types of metadata kept</li>
+                        <li>Pre-allocation vs. on-demand allocation</li>
+                        <li>Fixed-size vs. variable-size structures</li>
+                    </ul>
+
+                    <h4>Performance Optimization Techniques:</h4>
+                    <ul>
+                        <li><strong>Caching:</strong> Keep frequently used blocks in memory (buffer cache)</li>
+                        <li><strong>Read-ahead:</strong> Predict sequential reads and prefetch</li>
+                        <li><strong>Free-behind:</strong> Release blocks from cache as file is read</li>
+                        <li><strong>Locality:</strong> Keep file data and metadata close together</li>
+                    </ul>
+
+                    <h4>Write Synchronization:</h4>
+                    <ul>
+                        <li><strong>Synchronous writes:</strong> Write completes before return (safe, slow)</li>
+                        <li><strong>Asynchronous writes:</strong> Data buffered, faster return (faster, some risk)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>📚 File Systems Study Guide - Complete Revision Resource</p>
+            <p>Last Updated: December 2024</p>
+        </footer>
+    </div>
+
+    <script>
+        function showTopic(topicId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.topic-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            const selectedSection = document.getElementById(topicId);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+            }
+
+            // Update active button
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const sections = document.querySelectorAll('.topic-section');
+            
+            if (searchTerm.length === 0) {
+                // Reset - show first section
+                sections.forEach(section => section.classList.remove('active'));
+                sections[0].classList.add('active');
+                return;
+            }
+
+            // Search through all sections
+            let foundMatch = false;
+            sections.forEach(section => {
+                const text = section.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    if (!foundMatch) {
+                        // Show first matching section
+                        sections.forEach(s => s.classList.remove('active'));
+                        section.classList.add('active');
+                        foundMatch = true;
+                        window.scrollTo(0, 0);
+                    }
+                }
+            });
+        });
+
+        // Print functionality
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+        });
+    </script>
+</body>
+</html>
